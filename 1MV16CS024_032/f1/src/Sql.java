@@ -4,6 +4,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +36,15 @@ public class Sql {
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy");
+        LocalDateTime now = LocalDateTime.now();
+        
+        String currentDate = dtf.format(now);
+        
+          String year = currentDate.substring(0, 4);
+        
+        System.out.println(year);
 
         Sql obj = new Sql();
         ResultSet rs = obj.getTicketDetails("1");
@@ -144,19 +156,20 @@ public class Sql {
 
     }
 
-    public int insertIntoPassenger(String psId, String name, String age, String email, String phone, String passport, String address, String password) throws SQLException {
+    public int insertIntoPassenger(String psId, String name, int age, String email, String phone, String password, String passport, String address,String dob) throws SQLException {
 
-        String sql = "INSERT INTO PASSENGER(PS_CONTACT,PS_ID,PS_NAME,PS_AGE,PS_ADDRESS,password,pass_no,ps_mail) VALUES(?,?,?,?,?,?,?,?);";
+        String sql = "INSERT INTO PASSENGER(PS_CONTACT,PS_ID,PS_NAME,PS_AGE,PS_ADDRESS,password,pass_no,ps_mail,dob) VALUES(?,?,?,?,?,?,?,?,?);";
         PreparedStatement pst = con.prepareStatement(sql);
 
         pst.setLong(1, Long.parseLong(phone));
         pst.setInt(2, Integer.parseInt(psId));
         pst.setString(3, name);
-        pst.setInt(4, Integer.parseInt(age));
+        pst.setInt(4, age);
         pst.setString(5, address);
         pst.setString(6, password);
         pst.setString(7, passport);
         pst.setString(8, email);
+        pst.setString(9, dob);
 
         return pst.executeUpdate();
 
@@ -171,11 +184,10 @@ public class Sql {
                 + "     where a.ps_id=p.ps_id\n"
                 + "     and A.rt_id=R.RT_ID\n"
                 + "     and a.f_id=f.f_id;";
-        
-        PreparedStatement pst = con.prepareCall(sql);
-        
-        return pst.executeQuery();
 
+        PreparedStatement pst = con.prepareCall(sql);
+
+        return pst.executeQuery();
 
     }
 
